@@ -1,23 +1,10 @@
-[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(Core.CoreTest, org.scalatest.tools.Framework$$anon$1@33ee8bf3, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(Core.CoreTest, org.scalatest.tools.Framework$$anon$1@3924f63c, false, [SuiteSelector])[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mCoreTest:[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m- Core *** FAILED ***[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  java.nio.file.NoSuchFileException: E:\MERL\Repositories\RV32I-Single-Cycle-Core\assembly\hex_file.txt[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:85)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.fs.WindowsFileSystemProvider.newByteChannel(WindowsFileSystemProvider.java:236)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/java.nio.file.Files.newByteChannel(Files.java:380)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/java.nio.file.Files.newByteChannel(Files.java:432)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/java.nio.file.spi.FileSystemProvider.newInputStream(FileSystemProvider.java:422)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/java.nio.file.Files.newInputStream(Files.java:160)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at os.Path.getInputStream(Path.scala:475)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at os.read$lines$stream$$anon$3.generate(ReadWriteOps.scala:345)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 15 seconds, 835 milliseconds.[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- Core[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 3 seconds, 611 milliseconds.[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 1[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 1, aborted 0[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 0, failed 1, canceled 0, ignored 0, pending 0[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m*** 1 TEST FAILED ***[0m[0m
-[0m[[0m[31merror[0m] [0m[0mFailed tests:[0m
-[0m[[0m[31merror[0m] [0m[0m	Core.CoreTest[0m
-[0m[[0m[31merror[0m] [0m[0m(Test / [31mtestOnly[0m) sbt.TestsFailedException: Tests unsuccessful[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 1, failed 0, canceled 0, ignored 0, pending 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mAll tests passed.[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0mPassed tests:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Core.CoreTest[0m

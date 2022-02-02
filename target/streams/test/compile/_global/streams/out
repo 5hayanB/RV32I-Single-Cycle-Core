@@ -1,5 +1,2 @@
-[0m[[0m[33mwarn[0m] [0m[0m'-P:chiselplugin:useBundlePlugin' is now default behavior, you can stop using the scalacOption.[0m
-[0m[[0m[33mwarn[0m] [0m[0mE:\MERL\Repositories\RV32I-Single-Cycle-Core\src\test\scala\Core\CoreTest.scala:6:24: type FreeSpec in package scalatest is deprecated (since 3.1.0): The org.scalatest.FreeSpec trait has been moved and renamed. Please use org.scalatest.freespec.AnyFreeSpec instead. This can be rewritten automatically with autofix: https://github.com/scalatest/autofix/tree/master/3.1.x[0m
-[0m[[0m[33mwarn[0m] [0m[0mclass CoreTest extends FreeSpec with ChiselScalatestTester[0m
-[0m[[0m[33mwarn[0m] [0m[0m                       ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
+[0m[[0m[0mdebug[0m] [0m[0mAcquiring lock on file /home/shayan/MERL/RV32I-Single-Cycle-Core/project/target/.sbt-compilation-infos/root-test/.sbt-idea-lock ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mReleasing lock on file /home/shayan/MERL/RV32I-Single-Cycle-Core/project/target/.sbt-compilation-infos/root-test/.sbt-idea-lock.[0m

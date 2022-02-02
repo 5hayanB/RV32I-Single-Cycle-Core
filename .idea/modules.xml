@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/RISC-V Single Cycle Core.iml" filepath="$PROJECT_DIR$/.idea/modules/RISC-V Single Cycle Core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/RISC-V Single Cycle Core-build.iml" filepath="$PROJECT_DIR$/.idea/modules/RISC-V Single Cycle Core-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RV32I-Single-Cycle-Core.RISC-V Single Cycle Core.iml" filepath="$PROJECT_DIR$/.idea/modules/RV32I-Single-Cycle-Core.RISC-V Single Cycle Core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/project.RISC-V Single Cycle Core-build.iml" filepath="$PROJECT_DIR$/.idea/modules/project.RISC-V Single Cycle Core-build.iml" />
     </modules>
   </component>
 </project>
