@@ -18,8 +18,8 @@ class S_Type extends Module
     val io: S_Type_IO = IO(new S_Type_IO)
     val en: Bool = dontTouch(WireInit(io.en))
     val func3: UInt = dontTouch(WireInit(io.in(7, 5)))
-    val rs1: UInt = dontTouch(WireInit(io.in(19, 15)))
-    val rs2: UInt = dontTouch(WireInit(io.in(24, 20)))
+    val rs1: UInt = dontTouch(WireInit(io.in(12, 8)))
+    val rs2: UInt = dontTouch(WireInit(io.in(17, 13)))
     val imm: SInt = dontTouch(WireInit(Cat
     (
         io.in(24, 18),

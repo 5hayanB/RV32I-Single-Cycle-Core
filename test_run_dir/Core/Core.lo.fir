@@ -94,8 +94,8 @@ circuit Core :
     output io_imm : SInt<32>
 
     node _func3_T = bits(io_in, 7, 5) @[S_Type.scala 20:47]
-    node _rs1_T = bits(io_in, 19, 15) @[S_Type.scala 21:45]
-    node _rs2_T = bits(io_in, 24, 20) @[S_Type.scala 22:45]
+    node _rs1_T = bits(io_in, 12, 8) @[S_Type.scala 21:45]
+    node _rs2_T = bits(io_in, 17, 13) @[S_Type.scala 22:45]
     node _imm_T = bits(io_in, 24, 18) @[S_Type.scala 25:14]
     node _imm_T_1 = bits(io_in, 4, 0) @[S_Type.scala 26:14]
     node _imm_T_2 = cat(_imm_T, _imm_T_1) @[Cat.scala 30:58]
