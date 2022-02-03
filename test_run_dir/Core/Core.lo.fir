@@ -567,8 +567,8 @@ circuit Core :
     node _nPC_T_2 = asSInt(_nPC_T_1) @[Core.scala 26:34]
     node _nPC_T_3 = bits(_nPC_T_2, 31, 1) @[Core.scala 26:51]
     node _nPC_T_4 = cat(_nPC_T_3, UInt<1>("h0")) @[Cat.scala 30:58]
-    node _nPC_T_5 = bits(Decoder.io_imm, 31, 1) @[Core.scala 27:45]
-    node _nPC_T_6 = cat(_nPC_T_5, UInt<1>("h0")) @[Cat.scala 30:58]
+    node _nPC_T_5 = asUInt(Decoder.io_imm) @[Core.scala 27:49]
+    node _nPC_T_6 = shl(_nPC_T_5, 1) @[Core.scala 27:52]
     node _nPC_T_7 = add(Fetch.io_PC_out, _nPC_T_6) @[Core.scala 27:25]
     node _nPC_T_8 = tail(_nPC_T_7, 1) @[Core.scala 27:25]
     node nPC = mux(ControlUnit.io_jalr, _nPC_T_4, _nPC_T_8) @[Core.scala 24:24]
@@ -589,7 +589,7 @@ circuit Core :
     node _T_9 = bits(_T_8, 9, 0) @[Core.scala 102:27]
     Fetch.clock <= clock
     Fetch.reset <= reset
-    Fetch.io_nPC_in <= nPC @[Core.scala 107:19]
+    Fetch.io_nPC_in <= bits(nPC, 31, 0) @[Core.scala 107:19]
     Fetch.io_nPC_en <= _T_7 @[Core.scala 107:19]
     Decoder.clock <= clock
     Decoder.reset <= reset

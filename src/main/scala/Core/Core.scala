@@ -24,7 +24,7 @@ class Core extends Module
     val nPC: UInt = Mux(
         ControlUnit.io.jalr,
         Cat((RegFile.io.rs1_data + Decoder.io.imm)(31, 1), "b0".U),
-        Fetch.io.PC_out + Cat(Decoder.io.imm(31, 1), "b0".U)
+        Fetch.io.PC_out + (Decoder.io.imm.asUInt() << 1)
     )
     loadMemoryFromFile(inst_memory, "assembly/hex_file.txt")
     
