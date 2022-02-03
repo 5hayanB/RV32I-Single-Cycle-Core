@@ -8,9 +8,9 @@ class ControlUnit_IO extends Bundle
     val ld_en: Bool = Output(Bool())
     val str_en: Bool = Output(Bool())
     val op2sel: Bool = Output(Bool())
-    //    val br_en: Bool = Output(Bool())
+    val br_en: Bool = Output(Bool())
     val jal: Bool = Output(Bool())
-    //    val jalr: Bool = Output(Bool())
+    val jalr: Bool = Output(Bool())
     //    val lui: Bool = Output(Bool())
     //    val auipc: Bool = Output(Bool())
 }
@@ -32,18 +32,18 @@ class ControlUnit extends Module
         ld_en,
         str_en,
         op2sel,
-//        br_en,
-        jal/*,
-        jalr,
+        br_en,
+        jal,
+        jalr/*,
         auipc,
         lui*/
     ) zip Array(
         io.ld_en,
         io.str_en,
         io.op2sel,
-//        io.br_en,
+        io.br_en,
         io.jal,
-        /*io.jalr,
+        io.jalr/*,
         io.auipc,
         io.lui*/
     ) foreach {

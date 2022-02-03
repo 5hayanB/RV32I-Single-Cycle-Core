@@ -1,6 +1,7 @@
 package Core
 
 import chisel3._
+import chisel3.util._
 import chisel3.util.experimental.loadMemoryFromFile
 import Fetch.Fetch
 import ALU.ALU
@@ -20,10 +21,16 @@ class Core extends Module
     val WriteBack: WriteBack = Module(new WriteBack)
     val inst_memory: Mem[UInt] = Mem(1024, UInt(32.W))
     val ld_str_memory: Mem[SInt] = Mem(1024, SInt(32.W))
-    val nPC: UInt = Fetch.io.PC_out + Decoder.io.imm.asUInt()
+    val nPC: UInt = Mux(
+        ControlUnit.io.jalr,
+        Cat((RegFile.io.rs1_data + Decoder.io.imm)(31, 1), "b0".U),
+        Fetch.io.PC_out + Cat(Decoder.io.imm(31, 1), "b0".U)
+    )
     loadMemoryFromFile(inst_memory, "assembly/hex_file.txt")
     
     // Wiring the modules
+    
+    // ld_str_memory
     when (ControlUnit.io.str_en)
     {
         ld_str_memory.write(ALU.io.out(23, 0), RegFile.io.rs2_data)
@@ -60,9 +67,8 @@ class Core extends Module
         WriteBack.io.nPC,
         WriteBack.io.nPC_en,
         WriteBack.io.load_in,
-        WriteBack.io.ld_en
-        
-        // ld_str_memory
+        WriteBack.io.ld_en,
+        WriteBack.io.br_en
     ) zip Array(  // Corresponding input wires
         // Decoder
         inst_memory.read(Fetch.io.inst_out),
@@ -71,7 +77,7 @@ class Core extends Module
         Decoder.io.rd,
         Decoder.io.rs1,
         Decoder.io.rs2,
-        WriteBack.io.out,
+        Mux(ControlUnit.io.jal || ControlUnit.io.jalr, Fetch.io.nPC_out.asSInt(), WriteBack.io.out),
         
         // ALU
         Decoder.io.func3,
@@ -83,7 +89,7 @@ class Core extends Module
         ControlUnit.io.op2sel,
         
         // Fetch
-        ControlUnit.io.jal,
+        ControlUnit.io.jal || WriteBack.io.br_out || ControlUnit.io.jalr,
         nPC,
         
         // Control Unit
@@ -94,7 +100,8 @@ class Core extends Module
         Fetch.io.PC_out,
         ControlUnit.io.jal,
         ld_str_memory.read(ALU.io.out(23, 0)),
-        ControlUnit.io.ld_en
+        ControlUnit.io.ld_en,
+        ControlUnit.io.br_en
     ) foreach
     {
         x => x._1 := x._2
