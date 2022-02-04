@@ -8,7 +8,7 @@ class UJ_Type_IO extends Bundle
     val in: UInt = Input(UInt(25.W))
     val en: Bool = Input(Bool())
     val rd: UInt = Output(UInt(5.W))
-    val imm: SInt = Output(SInt(32.W))
+    val imm: SInt = Output(SInt(20.W))
 }
 class UJ_Type extends Module
 {

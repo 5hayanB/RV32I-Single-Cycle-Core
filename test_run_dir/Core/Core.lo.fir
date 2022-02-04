@@ -162,20 +162,18 @@ circuit Core :
     input io_in : UInt<25>
     input io_en : UInt<1>
     output io_rd : UInt<5>
-    output io_imm : SInt<32>
+    output io_imm : SInt<20>
 
     node _rd_T = bits(io_in, 4, 0) @[U_Type.scala 18:44]
-    node _imm_T = bits(io_in, 24, 5) @[U_Type.scala 21:14]
-    node _imm_T_1 = mux(UInt<1>("h0"), UInt<5>("h1f"), UInt<5>("h0")) @[Bitwise.scala 72:12]
-    node _imm_T_2 = cat(_imm_T, _imm_T_1) @[Cat.scala 30:58]
-    node _imm_T_3 = asSInt(_imm_T_2) @[U_Type.scala 23:13]
+    node _imm_T = bits(io_in, 24, 5) @[U_Type.scala 19:45]
+    node _imm_T_1 = asSInt(_imm_T) @[U_Type.scala 19:59]
     node en = io_en
     node rd = _rd_T
-    node _GEN_0 = mux(en, rd, UInt<1>("h0")) @[U_Type.scala 27:5 36:27 47:27]
-    node imm = _imm_T_3
-    node _GEN_1 = mux(en, imm, asSInt(UInt<1>("h0"))) @[U_Type.scala 27:5 36:27 47:27]
+    node _GEN_0 = mux(en, rd, UInt<1>("h0")) @[U_Type.scala 23:5 32:27 43:27]
+    node imm = _imm_T_1
+    node _GEN_1 = mux(en, imm, asSInt(UInt<1>("h0"))) @[U_Type.scala 23:5 32:27 43:27]
     io_rd <= _GEN_0
-    io_imm <= pad(_GEN_1, 32)
+    io_imm <= _GEN_1
 
   module UJ_Type :
     input clock : Clock
@@ -183,7 +181,7 @@ circuit Core :
     input io_in : UInt<25>
     input io_en : UInt<1>
     output io_rd : UInt<5>
-    output io_imm : SInt<32>
+    output io_imm : SInt<20>
 
     node _rd_T = bits(io_in, 4, 0) @[UJ_Type.scala 18:44]
     node _imm_T = bits(io_in, 24, 24) @[UJ_Type.scala 21:14]
@@ -201,7 +199,7 @@ circuit Core :
     node imm = _imm_T_5
     node _GEN_1 = mux(en, imm, asSInt(UInt<1>("h0"))) @[UJ_Type.scala 30:5 39:27 50:27]
     io_rd <= _GEN_0
-    io_imm <= pad(_GEN_1, 32)
+    io_imm <= asSInt(bits(_GEN_1, 19, 0))
 
   module Decoder :
     input clock : Clock
@@ -481,6 +479,8 @@ circuit Core :
     output io_br_en : UInt<1>
     output io_jal : UInt<1>
     output io_jalr : UInt<1>
+    output io_lui : UInt<1>
+    output io_auipc : UInt<1>
 
     node _ld_en_T = eq(io_id, UInt<1>("h0")) @[ControlUnit.scala 21:48]
     node _str_en_T = eq(io_id, UInt<4>("h8")) @[ControlUnit.scala 22:49]
@@ -508,6 +508,8 @@ circuit Core :
     io_br_en <= br_en @[ControlUnit.scala 50:19]
     io_jal <= jal @[ControlUnit.scala 50:19]
     io_jalr <= jalr @[ControlUnit.scala 50:19]
+    io_lui <= lui @[ControlUnit.scala 50:19]
+    io_auipc <= auipc @[ControlUnit.scala 50:19]
 
   module WriteBack :
     input clock : Clock
@@ -562,70 +564,80 @@ circuit Core :
       reader => MPORT_2
       writer => MPORT
       read-under-write => undefined
-    node _nPC_T = add(RegFile.io_rs1_data, Decoder.io_imm) @[Core.scala 26:34]
-    node _nPC_T_1 = tail(_nPC_T, 1) @[Core.scala 26:34]
-    node _nPC_T_2 = asSInt(_nPC_T_1) @[Core.scala 26:34]
-    node _nPC_T_3 = bits(_nPC_T_2, 31, 1) @[Core.scala 26:51]
-    node _nPC_T_4 = cat(_nPC_T_3, UInt<1>("h0")) @[Cat.scala 30:58]
-    node _nPC_T_5 = asUInt(Decoder.io_imm) @[Core.scala 27:49]
-    node _nPC_T_6 = shl(_nPC_T_5, 1) @[Core.scala 27:52]
-    node _nPC_T_7 = add(Fetch.io_PC_out, _nPC_T_6) @[Core.scala 27:25]
-    node _nPC_T_8 = tail(_nPC_T_7, 1) @[Core.scala 27:25]
-    node nPC = mux(ControlUnit.io_jalr, _nPC_T_4, _nPC_T_8) @[Core.scala 24:24]
-    node _T = bits(ALU.io_out, 23, 0) @[Core.scala 36:39]
+    node _nPC_T = add(RegFile.io_rs1_data, Decoder.io_imm) @[Core.scala 26:30]
+    node _nPC_T_1 = tail(_nPC_T, 1) @[Core.scala 26:30]
+    node _nPC_T_2 = asSInt(_nPC_T_1) @[Core.scala 26:30]
+    node _nPC_T_3 = asUInt(_nPC_T_2) @[Core.scala 26:54]
+    node _nPC_T_4 = bits(Decoder.io_imm, 31, 1) @[Core.scala 27:45]
+    node _nPC_T_5 = cat(_nPC_T_4, UInt<1>("h0")) @[Cat.scala 30:58]
+    node _nPC_T_6 = add(Fetch.io_PC_out, _nPC_T_5) @[Core.scala 27:25]
+    node _nPC_T_7 = tail(_nPC_T_6, 1) @[Core.scala 27:25]
+    node _nPC_T_8 = mux(ControlUnit.io_jalr, _nPC_T_3, _nPC_T_7) @[Core.scala 24:33]
+    node _lui_T = shl(Decoder.io_imm, 12) @[Core.scala 29:39]
+    node _auipc_T = asUInt(Decoder.io_imm) @[Core.scala 30:72]
+    node _auipc_T_1 = shl(_auipc_T, 12) @[Core.scala 30:75]
+    node _auipc_T_2 = add(Fetch.io_PC_out, _auipc_T_1) @[Core.scala 30:48]
+    node _auipc_T_3 = tail(_auipc_T_2, 1) @[Core.scala 30:48]
+    node _T = bits(ALU.io_out, 23, 0) @[Core.scala 40:39]
     node _T_1 = bits(_T, 9, 0)
-    node _GEN_0 = validif(ControlUnit.io_str_en, _T_1) @[Core.scala 35:5]
-    node _GEN_1 = validif(ControlUnit.io_str_en, clock) @[Core.scala 35:5]
-    node _GEN_2 = mux(ControlUnit.io_str_en, UInt<1>("h1"), UInt<1>("h0")) @[Core.scala 23:39 35:5]
-    node _GEN_3 = validif(ControlUnit.io_str_en, UInt<1>("h1")) @[Core.scala 35:5]
-    node _GEN_4 = validif(ControlUnit.io_str_en, RegFile.io_rs2_data) @[Core.scala 35:5]
-    node _T_2 = bits(Fetch.io_inst_out, 9, 0) @[Core.scala 74:25]
-    node _T_3 = or(ControlUnit.io_jal, ControlUnit.io_jalr) @[Core.scala 80:32]
-    node _T_4 = asSInt(Fetch.io_nPC_out) @[Core.scala 80:79]
-    node _T_5 = mux(_T_3, _T_4, WriteBack.io_out) @[Core.scala 80:12]
-    node _T_6 = or(ControlUnit.io_jal, WriteBack.io_br_out) @[Core.scala 92:28]
-    node _T_7 = or(_T_6, ControlUnit.io_jalr) @[Core.scala 92:51]
-    node _T_8 = bits(ALU.io_out, 23, 0) @[Core.scala 102:38]
-    node _T_9 = bits(_T_8, 9, 0) @[Core.scala 102:27]
+    node _GEN_0 = validif(ControlUnit.io_str_en, _T_1) @[Core.scala 39:5]
+    node _GEN_1 = validif(ControlUnit.io_str_en, clock) @[Core.scala 39:5]
+    node _GEN_2 = mux(ControlUnit.io_str_en, UInt<1>("h1"), UInt<1>("h0")) @[Core.scala 23:39 39:5]
+    node _GEN_3 = validif(ControlUnit.io_str_en, UInt<1>("h1")) @[Core.scala 39:5]
+    node _GEN_4 = validif(ControlUnit.io_str_en, RegFile.io_rs2_data) @[Core.scala 39:5]
+    node _T_2 = bits(Fetch.io_inst_out, 9, 0) @[Core.scala 78:25]
+    node _T_3 = or(ControlUnit.io_jal, ControlUnit.io_jalr) @[Core.scala 85:32]
+    node _T_4 = asSInt(Fetch.io_nPC_out) @[Core.scala 85:79]
+    node auipc = _auipc_T_3
+    node _T_5 = asSInt(auipc) @[Core.scala 87:55]
+    node _T_6 = mux(ControlUnit.io_auipc, _T_5, WriteBack.io_out) @[Core.scala 86:54]
+    node lui = _lui_T
+    node _T_7 = mux(ControlUnit.io_lui, lui, _T_6) @[Core.scala 85:86]
+    node _T_8 = mux(_T_3, _T_4, _T_7) @[Core.scala 84:12]
+    node _T_9 = or(ControlUnit.io_jal, WriteBack.io_br_out) @[Core.scala 102:28]
+    node _T_10 = or(_T_9, ControlUnit.io_jalr) @[Core.scala 102:51]
+    node _T_11 = bits(ALU.io_out, 23, 0) @[Core.scala 112:38]
+    node _T_12 = bits(_T_11, 9, 0) @[Core.scala 112:27]
+    node nPC = _nPC_T_8
     Fetch.clock <= clock
     Fetch.reset <= reset
-    Fetch.io_nPC_in <= bits(nPC, 31, 0) @[Core.scala 107:19]
-    Fetch.io_nPC_en <= _T_7 @[Core.scala 107:19]
+    Fetch.io_nPC_in <= nPC @[Core.scala 117:19]
+    Fetch.io_nPC_en <= _T_10 @[Core.scala 117:19]
     Decoder.clock <= clock
     Decoder.reset <= reset
-    Decoder.io_in <= inst_memory.MPORT_1.data @[Core.scala 107:19]
+    Decoder.io_in <= inst_memory.MPORT_1.data @[Core.scala 117:19]
     RegFile.clock <= clock
     RegFile.reset <= reset
-    RegFile.io_rd_addr <= Decoder.io_rd @[Core.scala 107:19]
-    RegFile.io_rs1_addr <= Decoder.io_rs1 @[Core.scala 107:19]
-    RegFile.io_rs2_addr <= Decoder.io_rs2 @[Core.scala 107:19]
-    RegFile.io_rd_data <= _T_5 @[Core.scala 107:19]
+    RegFile.io_rd_addr <= Decoder.io_rd @[Core.scala 117:19]
+    RegFile.io_rs1_addr <= Decoder.io_rs1 @[Core.scala 117:19]
+    RegFile.io_rs2_addr <= Decoder.io_rs2 @[Core.scala 117:19]
+    RegFile.io_rd_data <= asSInt(bits(_T_8, 31, 0)) @[Core.scala 117:19]
     ALU.clock <= clock
     ALU.reset <= reset
-    ALU.io_rs1 <= RegFile.io_rs1_data @[Core.scala 107:19]
-    ALU.io_rs2 <= RegFile.io_rs2_data @[Core.scala 107:19]
-    ALU.io_imm <= Decoder.io_imm @[Core.scala 107:19]
-    ALU.io_func3 <= Decoder.io_func3 @[Core.scala 107:19]
-    ALU.io_func7 <= Decoder.io_func7 @[Core.scala 107:19]
-    ALU.io_id <= Decoder.io_id @[Core.scala 107:19]
-    ALU.io_op2sel <= ControlUnit.io_op2sel @[Core.scala 107:19]
+    ALU.io_rs1 <= RegFile.io_rs1_data @[Core.scala 117:19]
+    ALU.io_rs2 <= RegFile.io_rs2_data @[Core.scala 117:19]
+    ALU.io_imm <= Decoder.io_imm @[Core.scala 117:19]
+    ALU.io_func3 <= Decoder.io_func3 @[Core.scala 117:19]
+    ALU.io_func7 <= Decoder.io_func7 @[Core.scala 117:19]
+    ALU.io_id <= Decoder.io_id @[Core.scala 117:19]
+    ALU.io_op2sel <= ControlUnit.io_op2sel @[Core.scala 117:19]
     ControlUnit.clock <= clock
     ControlUnit.reset <= reset
-    ControlUnit.io_id <= Decoder.io_id @[Core.scala 107:19]
+    ControlUnit.io_id <= Decoder.io_id @[Core.scala 117:19]
     WriteBack.clock <= clock
     WriteBack.reset <= reset
-    WriteBack.io_alu_in <= ALU.io_out @[Core.scala 107:19]
-    WriteBack.io_nPC <= Fetch.io_PC_out @[Core.scala 107:19]
-    WriteBack.io_nPC_en <= ControlUnit.io_jal @[Core.scala 107:19]
-    WriteBack.io_load_in <= ld_str_memory.MPORT_2.data @[Core.scala 107:19]
-    WriteBack.io_ld_en <= ControlUnit.io_ld_en @[Core.scala 107:19]
-    WriteBack.io_br_en <= ControlUnit.io_br_en @[Core.scala 107:19]
-    inst_memory.MPORT_1.addr <= _T_2 @[Core.scala 74:25]
-    inst_memory.MPORT_1.en <= UInt<1>("h1") @[Core.scala 74:25]
-    inst_memory.MPORT_1.clk <= clock @[Core.scala 74:25]
-    ld_str_memory.MPORT_2.addr <= _T_9 @[Core.scala 102:27]
-    ld_str_memory.MPORT_2.en <= UInt<1>("h1") @[Core.scala 102:27]
-    ld_str_memory.MPORT_2.clk <= clock @[Core.scala 102:27]
+    WriteBack.io_alu_in <= ALU.io_out @[Core.scala 117:19]
+    WriteBack.io_nPC <= Fetch.io_PC_out @[Core.scala 117:19]
+    WriteBack.io_nPC_en <= ControlUnit.io_jal @[Core.scala 117:19]
+    WriteBack.io_load_in <= ld_str_memory.MPORT_2.data @[Core.scala 117:19]
+    WriteBack.io_ld_en <= ControlUnit.io_ld_en @[Core.scala 117:19]
+    WriteBack.io_br_en <= ControlUnit.io_br_en @[Core.scala 117:19]
+    inst_memory.MPORT_1.addr <= _T_2 @[Core.scala 78:25]
+    inst_memory.MPORT_1.en <= UInt<1>("h1") @[Core.scala 78:25]
+    inst_memory.MPORT_1.clk <= clock @[Core.scala 78:25]
+    ld_str_memory.MPORT_2.addr <= _T_12 @[Core.scala 112:27]
+    ld_str_memory.MPORT_2.en <= UInt<1>("h1") @[Core.scala 112:27]
+    ld_str_memory.MPORT_2.clk <= clock @[Core.scala 112:27]
     ld_str_memory.MPORT.addr <= _GEN_0
     ld_str_memory.MPORT.en <= _GEN_2
     ld_str_memory.MPORT.clk <= _GEN_1

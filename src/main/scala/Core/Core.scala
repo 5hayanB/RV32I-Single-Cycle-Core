@@ -21,11 +21,15 @@ class Core extends Module
     val WriteBack: WriteBack = Module(new WriteBack)
     val inst_memory: Mem[UInt] = Mem(1024, UInt(32.W))
     val ld_str_memory: Mem[SInt] = Mem(1024, SInt(32.W))
-    val nPC: UInt = Mux(
+    val nPC: UInt = WireInit(Mux(
         ControlUnit.io.jalr,
-        Cat((RegFile.io.rs1_data + Decoder.io.imm)(31, 1), "b0".U),
-        Fetch.io.PC_out + (Decoder.io.imm.asUInt() << 1)
-    )
+        (RegFile.io.rs1_data + Decoder.io.imm).asUInt(),
+        Fetch.io.PC_out + Cat(Decoder.io.imm(31, 1), "b0".U)
+    ))
+    val lui = WireInit(Decoder.io.imm << 12)
+    val auipc: UInt = WireInit(Fetch.io.PC_out + (Decoder.io.imm.asUInt() << 12))
+    
+    // Loading assembly instructions
     loadMemoryFromFile(inst_memory, "assembly/hex_file.txt")
     
     // Wiring the modules
@@ -77,7 +81,13 @@ class Core extends Module
         Decoder.io.rd,
         Decoder.io.rs1,
         Decoder.io.rs2,
-        Mux(ControlUnit.io.jal || ControlUnit.io.jalr, Fetch.io.nPC_out.asSInt(), WriteBack.io.out),
+        Mux(
+            ControlUnit.io.jal || ControlUnit.io.jalr, Fetch.io.nPC_out.asSInt(), Mux(
+                ControlUnit.io.lui, lui.asSInt(), Mux(
+                    ControlUnit.io.auipc, auipc.asSInt(), WriteBack.io.out
+                )
+            )
+        ),
         
         // ALU
         Decoder.io.func3,
