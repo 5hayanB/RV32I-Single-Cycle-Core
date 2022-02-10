@@ -49,6 +49,7 @@ class Core extends Module
         RegFile.io.rs1_addr,
         RegFile.io.rs2_addr,
         RegFile.io.rd_data,
+        RegFile.io.write_en,
         
         // ALU
         ALU.io.func3,
@@ -87,6 +88,11 @@ class Core extends Module
                     ControlUnit.io.auipc, auipc.asSInt(), WriteBack.io.out
                 )
             )
+        ),
+        Mux(
+            Decoder.io.id === 0.U || Decoder.io.id === 4.U || Decoder.io.id === 5.U || Decoder.io.id === 6.U || Decoder.io.id === 12.U || Decoder.io.id === 13.U || Decoder.io.id === 14.U || Decoder.io.id === 25.U || Decoder.io.id === 27.U,
+            1.B,
+            0.B
         ),
         
         // ALU
